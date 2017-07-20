@@ -27,11 +27,12 @@
 
 //for total over time average
 struct average{
-  Eigen::Vector3d mean;
+  Eigen::Vector3d mDistance;
+  double mTheta[3];
   long long polls;
 };
 
-average aDistance[5];
+average averages[5];
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -58,29 +59,41 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
     theta[di][0] = atan2(rot[di](1, 2), rot[di](2, 2));
     theta[di][1] = atan2(-rot[di](0, 2), sqrt(rot[di](1, 2)*rot[di](1, 2) + rot[di](2, 2)*rot[di](2, 2)));
     theta[di][2] = atan2(rot[di](0, 1), rot[di](0, 0));
+    for (int i = 0; i < 3; i++){
+      if(theta[di][i]<0)
+	theta[di][i]+=2*PI;
+      theta[di][i]*=180.0/PI;
+    }
+
   }
 
   //prints data
   for (int i = 0; i < 25; i++)
     std::cout << '-';
-  std::cout << "\ntest";
   for (int i = 0; i < 5; i++){
     if (found[i]){
       std::cout << "\nid: " << i << "\n";
       std::cout << "rot: \n" << rot[i] << std::endl;
       std::cout << "trans: \n" << trans[i] << "\n";
-      std::cout << "xtheta: " << theta[i][0]*180.0/PI << "\n";
-      std::cout << "ytheta: " << theta[i][1]*180.0/PI << "\n";
-      std::cout << "ztheta: " << theta[i][2]*180.0/PI << "\n";
-
+      std::cout << "xtheta: " << theta[i][0] << "\n";
+      std::cout << "ytheta: " << theta[i][1] << "\n";
+      std::cout << "ztheta: " << theta[i][2] << "\n";
+	
+      //updates average over time for rotation and translation
       if (found[0]&&i!=0){
-	aDistance[i].polls++;
-	if (aDistance[i].polls == 1)
-	  aDistance[i].mean = trans[i]-trans[0];
-	else
-          aDistance[i].mean = aDistance[i].mean*(aDistance[i].polls-1)/aDistance[i].polls+(trans[i]-trans[0])/aDistance[i].polls;
-	std::cout << "distance from tag 0: " << trans[i]-trans[0] << "\n";
-	std::cout << "average distane from tag 0: " << aDistance[i].mean << "\n";
+	averages[i].polls++;
+        averages[i].mDistance = averages[i].mDistance*(averages[i].polls-1)/averages[i].polls+(trans[i]-trans[0])/averages[i].polls;
+	for (int j = 0; j < 3; j++)
+	  averages[i].mTheta[j] = averages[i].mTheta[j]*(averages[i].polls-1)/averages[i].polls+(theta[i][j]-theta[0][j])/averages[i].polls;
+	
+	std::cout << "distance from tag 0: \n" << trans[i]-trans[0] << "\n";
+	std::cout << "average distance from tag 0: \n" << averages[i].mDistance << "\n";
+	std::cout << "xtheta from tag 0: " << theta[i][0]-theta[0][0] << "\n";
+	std::cout << "average xtheta from tag 0: " << averages[i].mTheta[0] << "\n";
+        std::cout << "ytheta from tag 0: " << theta[i][1]-theta[0][1] << "\n";
+	std::cout << "average ytheta from tag 0: " << averages[i].mTheta[1] << "\n";
+	std::cout << "ztheta from tag 0: " << theta[i][2]-theta[0][2] << "\n";
+        std::cout << "average ztheta from tag 0: " << averages[i].mTheta[2] << "\n";
       }
 
       std::cout << "\n\n";
