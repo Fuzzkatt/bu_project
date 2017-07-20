@@ -22,6 +22,7 @@
 #define cy 312.683933
 
 #include <bu_project/tagdata.h>
+#include <geometry_msgs/Pose2D.h>
 
 //for total over time average
 struct average{
@@ -66,6 +67,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
 
   }
 
+  bu_project::tagdata td;
   //prints data
   /*for (int i = 0; i < 25; i++)
     std::cout << '-';*/
@@ -97,18 +99,26 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
         std::cout << "average ztheta from tag 0: " << averages[i].mTheta[2] << "\n";*/
         
         //if tag other than tag 0 is detected as well as tag 0, publish 2d translation and y-axis rotation
-	bu_project::tagdata td;
-	td.id = i;
 	Eigen::Vector3d tempv = trans[i]-trans[0];
-	td.x = tempv(0);
-	td.y = tempv(1);
-	td.theta = theta[i][1]-theta[0][1];
-        pub.publish(td);
+	geometry_msgs::Pose2D temp;
+	temp.x = tempv(0);
+	temp.y = tempv(1);
+	temp.theta = theta[i][1]-theta[0][1];
+        td.data.push_back(temp);
       //}
 
       //std::cout << "\n\n";
     }
+    else{
+      geometry_msgs::Pose2D blank;
+      blank.x = 0.0;
+      blank.y = 0.0; 
+      blank.theta = 0.0;
+      td.data.push_back(blank);
+    }
   }
+
+  pub.publish(td);
   //for (int i = 0; i < 25; i++)
   //  std::cout << '-';
   //std::cout << "\n\n\n";
@@ -118,7 +128,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
 int main(int argc, char**argv){
   ros::init(argc, argv, "tag_calculations");
   ros::NodeHandle nh;
-  pub = nh.advertise<bu_project::tagdata>("tagdata", 1000);
+  pub = nh.advertise<bu_project::tagdata>("tagdata_raw", 1000);
   image_transport::ImageTransport it(nh);
   image_transport::Subscriber sub = it.subscribe("camera/image", 1, imageCallback);
   ros::spin();

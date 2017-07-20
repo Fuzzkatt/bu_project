@@ -9,7 +9,7 @@ add_message_files(DIRECTORY msg
          tagdata.msg
    )
 
-generate_messages(DEPENDENCIES sensor_msgs std_msgs)
+generate_messages(DEPENDENCIES geometry_msgs sensor_msgs std_msgs)
 
 catkin_package(INCLUDE_DIRS include
            LIBRARIES apriltags
