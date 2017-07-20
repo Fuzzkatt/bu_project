@@ -6,9 +6,10 @@ find_package(Eigen REQUIRED)
 
 add_message_files(DIRECTORY msg
    FILES ResizedImage.msg
+         tagdata.msg
    )
 
-generate_messages(DEPENDENCIES sensor_msgs)
+generate_messages(DEPENDENCIES sensor_msgs std_msgs)
 
 catkin_package(INCLUDE_DIRS include
            LIBRARIES apriltags

@@ -1,9 +1,10 @@
 <package>
   <name>bu_project</name>
-  <version>0.0.0</version>
+  <version>1.2.4</version>
   <description>The bu_project package</description>
   <maintainer email="zonghan2000@gmail.com">Patrick Wang</maintainer>
   <license>Apache 2.0</license>
+
 
   <build_depend>cv_bridge</build_depend>
   <build_depend>image_transport</build_depend>
