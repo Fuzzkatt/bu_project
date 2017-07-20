@@ -13,14 +13,7 @@
 #include <geometry_msgs/PoseArray.h>
 #include </home/pat/it_ws/devel/.private/apriltags_ros/include/apriltags_ros/AprilTagDetection.h>
 #include </home/pat/it_ws/devel/.private/apriltags_ros/include/apriltags_ros/AprilTagDetectionArray.h>
-//#include <apriltags_ros/AprilTagDetection.h>
-//#include <apriltags_ros/AprilTagDetectionArray.h>
-//#include <AprilTags/Tag16h5.h>
-//#include <AprilTags/Tag25h7.h>
-//#include <AprilTags/Tag25h9.h>
-//#include <AprilTags/Tag36h9.h>
 #include <AprilTags/Tag36h11.h>
-//#include <XmlRpcException.h>
 
 #include <math.h>
 
@@ -32,15 +25,13 @@
 #define cx 427.522877
 #define cy 312.683933
 
-//for moving average
+//for total over time average
 struct average{
-  Eigen::Vector3d sample[20];
-  Eigen::Vector3d total;
-  int nsamples = 0;
-  int index = 0;
+  Eigen::Vector3d mean;
+  long long polls;
 };
 
-average aDistance[5][5];
+average aDistance[5];
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
@@ -52,7 +43,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   
   Eigen::Vector3d trans [5];
   Eigen::Matrix3d rot [5];
-  Eigen::Vector3d distance[5][5]; //distance[i][j] = distance from tag id i to tag id j
+  Eigen::Vector3d distance[5]; //distance[i] = distance from tag i to tag 0;
   bool found[5]; //tracks if tag detected in current callback
   double theta[5][3]; //col 0 x, col 1 y, col 2 z
 
@@ -62,7 +53,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   //extracts data from tag detection
   BOOST_FOREACH(AprilTags::TagDetection detection, detections){
     int di = detection.id;
-    found[di] = 1;
+    found[di] = 1; 
     detection.getRelativeTranslationRotation(tag_size, fx, fy, cx, cy, trans[di], rot[di]);
     theta[di][0] = atan2(rot[di](1, 2), rot[di](2, 2));
     theta[di][1] = atan2(-rot[di](0, 2), sqrt(rot[di](1, 2)*rot[di](1, 2) + rot[di](2, 2)*rot[di](2, 2)));
@@ -71,7 +62,8 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
 
   //prints data
   for (int i = 0; i < 25; i++)
-    cout << '-';
+    std::cout << '-';
+  std::cout << "\ntest";
   for (int i = 0; i < 5; i++){
     if (found[i]){
       std::cout << "\nid: " << i << "\n";
@@ -81,33 +73,21 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
       std::cout << "ytheta: " << theta[i][1]*180.0/PI << "\n";
       std::cout << "ztheta: " << theta[i][2]*180.0/PI << "\n";
 
-      //updates average distances if necessary using moving average considering last 20 samples
-      for (int j = 0; j < 5; j++){
-	if (i != j && found[j]){
-	  if (aDistance[i][j].nsamples < 20){
-	    aDistance[i][j].nsamples++;
-	    aDistance[i][j].sample[aDistance[i][j].index] = trans[i]-trans[j];
-	    aDistance[i][j].total += aDistance[i][j].sample[aDistance[i][j].index];
-	  }
-	  else{
-	    aDistance[i][j].total -= aDistance[i][j].sample[aDistance[i][j].index];
-	    aDistance[i][j].sample[aDistance[i][j].index] = trans[i]-trans[j];
-	    aDistance[i][j].total += aDistance[i][j].sample[aDistance[i][j].index];
-	  }
-	  aDistance[i][j].index++;
-	  if (aDistance[i][j].index == 20)
-	    aDistance[i][j].index-=20;
-
-	  std::cout << "distance from tag " << j << ":\n" << trans[i]-trans[j] << "\n";
-	  std::cout << "average distance from tag " << j << ":\n" << aDistance[i][j].total/aDistance[i][j].nsamples << "\n";
-	}
+      if (found[0]&&i!=0){
+	aDistance[i].polls++;
+	if (aDistance[i].polls == 1)
+	  aDistance[i].mean = trans[i]-trans[0];
+	else
+          aDistance[i].mean = aDistance[i].mean*(aDistance[i].polls-1)/aDistance[i].polls+(trans[i]-trans[0])/aDistance[i].polls;
+	std::cout << "distance from tag 0: " << trans[i]-trans[0] << "\n";
+	std::cout << "average distane from tag 0: " << aDistance[i].mean << "\n";
       }
 
       std::cout << "\n\n";
     }
   }
   for (int i = 0; i < 25; i++)
-    cout << '-';
+    std::cout << '-';
   std::cout << "\n\n\n";
 
 }
