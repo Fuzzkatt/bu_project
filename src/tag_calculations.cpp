@@ -24,14 +24,6 @@
 #include <bu_project/tagdata.h>
 #include <geometry_msgs/Pose2D.h>
 
-//for total over time average
-struct average{
-  Eigen::Vector3d mDistance;
-  double mTheta[3];
-  long long polls;
-};
-
-average averages[5];
 ros::Publisher pub;
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg){
@@ -64,52 +56,21 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
 	theta[di][i]+=2*PI;
       theta[di][i]*=180.0/PI;
     }
-
   }
 
   bu_project::tagdata td;
-  //prints data
-  /*for (int i = 0; i < 25; i++)
-    std::cout << '-';*/
   for (int i = 0; i < 5; i++){
     if (found[i]&&found[0]&&i!=0){
-     /* std::cout << "\nid: " << i << "\n";
-      std::cout << "rot: \n" << rot[i] << std::endl;
-      std::cout << "trans: \n" << trans[i] << "\n";
-      std::cout << "xtheta: " << theta[i][0] << "\n";
-      std::cout << "ytheta: " << theta[i][1] << "\n";
-      std::cout << "ztheta: " << theta[i][2] << "\n";*/
-      /*
-      //updates average over time for rotation and translation
-      if (found[0]&&i!=0){
-	
-	//updates average over time for ratation and translation
-	averages[i].polls++;
-        averages[i].mDistance = averages[i].mDistance*(averages[i].polls-1)/averages[i].polls+(trans[i]-trans[0])/averages[i].polls;
-	for (int j = 0; j < 3; j++)
-	  averages[i].mTheta[j] = averages[i].mTheta[j]*(averages[i].polls-1)/averages[i].polls+(theta[i][j]-theta[0][j])/averages[i].polls;
-	*/
-	/*std::cout << "distance from tag 0: \n" << trans[i]-trans[0] << "\n";
-	std::cout << "average distance from tag 0: \n" << averages[i].mDistance << "\n";
-	std::cout << "xtheta from tag 0: " << theta[i][0]-theta[0][0] << "\n";
-	std::cout << "average xtheta from tag 0: " << averages[i].mTheta[0] << "\n";
-        std::cout << "ytheta from tag 0: " << theta[i][1]-theta[0][1] << "\n";
-	std::cout << "average ytheta from tag 0: " << averages[i].mTheta[1] << "\n";
-	std::cout << "ztheta from tag 0: " << theta[i][2]-theta[0][2] << "\n";
-        std::cout << "average ztheta from tag 0: " << averages[i].mTheta[2] << "\n";*/
-        
-        //if tag other than tag 0 is detected as well as tag 0, publish 2d translation and y-axis rotation
-	Eigen::Vector3d tempv = trans[i]-trans[0];
-	geometry_msgs::Pose2D temp;
-	temp.x = tempv(0);
-	temp.y = tempv(1);
-	temp.theta = theta[i][1]-theta[0][1];
-        td.data.push_back(temp);
-      //}
-
-      //std::cout << "\n\n";
+      //if tag other than tag 0 is detected as well as tag 0, push pose2d to td.data
+      Eigen::Vector3d tempv = trans[i]-trans[0];
+      geometry_msgs::Pose2D temp;
+      temp.x = tempv(0);
+      temp.y = tempv(1);
+      temp.theta = theta[i][1]-theta[0][1];
+      td.data.push_back(temp);
     }
     else{
+      //otherwise, pose blank msg representing no data collected for tag i
       geometry_msgs::Pose2D blank;
       blank.x = 0.0;
       blank.y = 0.0; 
@@ -119,10 +80,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
   }
 
   pub.publish(td);
-  //for (int i = 0; i < 25; i++)
-  //  std::cout << '-';
-  //std::cout << "\n\n\n";
-
 }
 
 int main(int argc, char**argv){
