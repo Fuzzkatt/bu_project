@@ -1,7 +1,9 @@
 # bu_project
 
 Patrick Wang's project for BU RISE Internship Summer 2017
+
 Professor: Roberto Tron
+
 Mentor: Arman Karimian
 
 Tested on ROS Lunar on Ubuntu 17.04 VMWare Fusion
