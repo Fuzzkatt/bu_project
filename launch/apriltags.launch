@@ -6,7 +6,7 @@
   </node>
   <node pkg="bu_project" type="tag_calculations" name="tag_calcs">
   </node>
-  <node pkg="bu_project" type="noise_variance_sampling" name="NVS" output="screen"> 
+  <node pkg="bu_project" type="filtered_average" name="fAverage" output="screen"> 
   </node>
 
 </launch>
