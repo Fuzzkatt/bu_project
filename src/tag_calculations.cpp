@@ -14,8 +14,8 @@
 #include <math.h>
 
 #define PI 3.14159265
-//should be standardized at 81x81 mm tags, calibration for macbook pro webcam, yaml at /home/pat/ost.yaml
-#define tag_size 0.081
+//should be standardized at 80x80 mm tags, calibration for macbook pro webcam, yaml at /home/pat/ost.yaml
+#define tag_size 0.080
 #define fx 696.286438
 #define fy 803.754333
 #define cx 427.522877

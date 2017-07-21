@@ -4,7 +4,9 @@
   </node>
   <node pkg="bu_project" type="my_publisher" name="publisher">
   </node>
-  <node pkg="bu_project" type="tag_calculations" name="tag_calcs" output="screen">
+  <node pkg="bu_project" type="tag_calculations" name="tag_calcs">
+  </node>
+  <node pkg="bu_project" type="noise_variance_sampling" name="NVS" output="screen"> 
   </node>
 
 </launch>
