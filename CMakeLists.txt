@@ -7,6 +7,7 @@ find_package(Eigen REQUIRED)
 add_message_files(DIRECTORY msg
    FILES ResizedImage.msg
          tagdata.msg
+	 filteredaverage.msg
    )
 
 generate_messages(DEPENDENCIES geometry_msgs sensor_msgs std_msgs)

@@ -51,22 +51,16 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
     theta[di][0] = atan2(rot[di](1, 2), rot[di](2, 2));
     theta[di][1] = atan2(-rot[di](0, 2), sqrt(rot[di](1, 2)*rot[di](1, 2) + rot[di](2, 2)*rot[di](2, 2)));
     theta[di][2] = atan2(rot[di](0, 1), rot[di](0, 0));
-    for (int i = 0; i < 3; i++){
-      if(theta[di][i]<0)
-	theta[di][i]+=2*PI;
-      theta[di][i]*=180.0/PI;
-    }
   }
 
   bu_project::tagdata td;
   for (int i = 0; i < 5; i++){
-    if (found[i]&&found[0]&&i!=0){
-      //if tag other than tag 0 is detected as well as tag 0, push pose2d to td.data
-      Eigen::Vector3d tempv = trans[i]-trans[0];
+    if (found[i]){
+      //push pose2d data in case of detection
       geometry_msgs::Pose2D temp;
-      temp.x = tempv(0);
-      temp.y = tempv(1);
-      temp.theta = theta[i][1]-theta[0][1];
+      temp.x = trans[i](0);
+      temp.y = trans[i](1);
+      temp.theta = theta[i][1];
       td.data.push_back(temp);
     }
     else{
