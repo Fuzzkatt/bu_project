@@ -16,13 +16,18 @@
 #define PI 3.14159265
 //should be standardized at 80x80 mm tags, calibration for macbook pro webcam, yaml at /home/pat/ost.yaml
 #define tag_size 0.080
-#define fx 696.286438
-#define fy 803.754333
-#define cx 427.522877
-#define cy 312.683933
+//#define fx 696.286438
+//#define fy 803.754333
+//#define cx 427.522877
+//#define cy 312.683933
 
-#include <bu_project/tagdata.h>
-#include <geometry_msgs/Pose2D.h>
+#define fx 750.0
+#define fy 750.0
+#define cx 320.0
+#define cy 240.0
+
+#include <bu_project/tagdata3d.h>
+#include <geometry_msgs/Point.h>
 
 ros::Publisher pub;
 
@@ -53,23 +58,25 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
     theta[di][2] = atan2(rot[di](0, 1), rot[di](0, 0));
   }
 
-  bu_project::tagdata td;
+  bu_project::tagdata3d td;
   for (int i = 0; i < 5; i++){
     if (found[i]){
       //push pose2d data in case of detection
-      geometry_msgs::Pose2D temp;
-      temp.x = trans[i](0);
-      temp.y = trans[i](1);
-      temp.theta = theta[i][1];
-      td.data.push_back(temp);
+      geometry_msgs::Point p;
+      p.x = trans[i](0);
+      p.y = trans[i](1);
+      p.z = trans[i](2);
+      td.angles.push_back(theta[i][1]);
+      td.points.push_back(p);
     }
     else{
       //otherwise, pose blank msg representing no data collected for tag i
-      geometry_msgs::Pose2D blank;
+      geometry_msgs::Point blank;
       blank.x = 0.0;
       blank.y = 0.0; 
-      blank.theta = 0.0;
-      td.data.push_back(blank);
+      blank.z = 0.0;
+      td.angles.push_back(0.0);
+      td.points.push_back(blank);
     }
   }
 
@@ -79,7 +86,7 @@ void imageCallback(const sensor_msgs::ImageConstPtr& msg){
 int main(int argc, char**argv){
   ros::init(argc, argv, "tag_calculations");
   ros::NodeHandle nh;
-  pub = nh.advertise<bu_project::tagdata>("tagdata_raw", 1000);
+  pub = nh.advertise<bu_project::tagdata3d>("tagdata_raw", 1000);
   image_transport::ImageTransport it(nh);
   image_transport::Subscriber sub = it.subscribe("camera/image", 1, imageCallback);
   ros::spin();

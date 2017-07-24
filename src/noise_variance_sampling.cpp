@@ -1,13 +1,14 @@
 #include <ros/ros.h>
-#include <bu_project/tagdata.h>
+#include <bu_project/tagdata3d.h>
 #include <geometry_msgs/Pose2D.h>
 #include <math.h>
 
 int polls[5];
 double measurement[5][100];
 
-void callback(const bu_project::tagdata td){
-  for (int i = 0; i < 5; i++){
+void callback(const bu_project::tagdata3d td){
+  //will update later
+  /*for (int i = 0; i < 5; i++){
     double cx = td.data[i].x;
     double cy = td.data[i].y;
     double ct = td.data[i].theta;
@@ -31,7 +32,7 @@ void callback(const bu_project::tagdata td){
         polls[i]++;
       }
     }
-  }
+  }*/
 }
 
 int main (int argc, char**argv){

@@ -1,6 +1,6 @@
 #include <ros/ros.h>
-#include <bu_project/tagdata.h>
-#include <geometry_msgs/Pose2D.h>
+#include <bu_project/tagdata3d.h>
+#include <geometry_msgs/Point.h>
 #include <math.h>
 #include <bu_project/filteredaverage.h>
 #include <Eigen/Dense>
@@ -12,13 +12,14 @@ bool firstIteration[5];
 ros::Publisher pub;
 ros::Publisher pub2;
 
-void callback(const bu_project::tagdata td){
+void callback(const bu_project::tagdata3d td){
   bu_project::filteredaverage fa;
   bu_project::filteredaverage md;
 
-  double x0 = td.data[0].x;
-  double y0 = td.data[0].y;
-  double t = -td.data[0].theta;
+  double x0 = td.points[0].x;
+  double y0 = td.points[0].y;
+  double z0 = td.points[0].z;
+  double t = -td.angles[0];
 
   std_msgs::Float64 f;
   f.data = 0;
@@ -26,11 +27,12 @@ void callback(const bu_project::tagdata td){
   f.data = 0;
   md.averages.push_back(f);
 
-  if (x0!=0.0||y0!=0.0||t!=0.0){
+  if (x0!=0.0||y0!=0.0||z0!=0.0||t!=0.0){
     for (int i = 1; i < 5; i++){
-      double cx = td.data[i].x;
-      double cy = td.data[i].y;
-      double ct = td.data[i].theta;
+      double cx = td.points[i].x;
+      double cy = td.points[i].y;
+      double cz = td.points[i].z;
+      double ct = td.angles[i];
 
       Eigen::Matrix2d rot;
       rot(0, 0) = cos(t);
@@ -41,9 +43,11 @@ void callback(const bu_project::tagdata td){
       Eigen::Vector2d trans0(x0, y0);
       Eigen::Vector2d trans1(cx, cy);
       Eigen::Vector2d distancev = rot*(trans1-trans0);
+      
       double Y = sqrt(distancev(0)*distancev(0) + distancev(1)*distancev(1));
+      //double Y = sqrt(distancev(2)*distancev(2) + temp*temp);
 
-      if (cx!=0.0||cy!=0.0||ct!=0.0){
+      if (cx!=0.0||cy!=0.0||cz!=0.0||ct!=0.0){
         if (firstIteration[i]){
 	  X[i] = Y;
 	  firstIteration[i] = 0;
