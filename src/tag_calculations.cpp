@@ -21,8 +21,8 @@
 //#define cx 427.522877
 //#define cy 312.683933
 
-#define fx 750.0
-#define fy 750.0
+#define fx 720.0
+#define fy 720.0
 #define cx 320.0
 #define cy 240.0
 

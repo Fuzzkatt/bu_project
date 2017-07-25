@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(bu_project)
 
-find_package(catkin REQUIRED COMPONENTS cmake_modules apriltags  cv_bridge image_transport message_generation sensor_msgs)
+find_package(catkin REQUIRED COMPONENTS cmake_modules apriltags std_msgs  cv_bridge image_transport message_generation sensor_msgs)
 find_package(Eigen REQUIRED)
 
 add_message_files(DIRECTORY msg
@@ -14,7 +14,7 @@ generate_messages(DEPENDENCIES geometry_msgs sensor_msgs std_msgs)
 
 catkin_package(INCLUDE_DIRS include
            LIBRARIES apriltags
-           CATKIN_DEPENDS apriltags cv_bridge image_transport message_runtime sensor_msgs
+           CATKIN_DEPENDS apriltags cv_bridge image_transport message_runtime sensor_msgs std_msgs
            DEPENDS Eigen)
 
 find_package(OpenCV)
@@ -36,6 +36,10 @@ target_link_libraries(noise_variance_sampling ${catkin_LIBRARIES} ${OpenCV_LIBRA
 add_executable(filtered_average src/filtered_average.cpp)
 add_dependencies(filtered_average ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(filtered_average ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+add_executable(filter_test src/filter_test.cpp)
+add_dependencies(filter_test ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(filter_test ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 add_executable(my_subscriber src/my_subscriber.cpp)
 add_dependencies(my_subscriber ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
