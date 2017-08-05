@@ -5,6 +5,7 @@
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
+  //std::cout << "enterting callback\n";
   try
   {
     cv::imshow("view", cv_bridge::toCvShare(msg, "bgr8")->image);

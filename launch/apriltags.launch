@@ -1,8 +1,8 @@
 <launch>
 
-  <node pkg="bu_project" type="my_subscriber" name="subscriber">
-  </node>
   <node pkg="bu_project" type="my_publisher" name="publisher">
+  </node>
+  <node pkg="bu_project" type="my_subscriber" name="subscriber">
   </node>
   <node pkg="bu_project" type="tag_calculations" name="tag_calcs" output="screen">
   </node>

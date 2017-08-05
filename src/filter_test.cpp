@@ -8,9 +8,9 @@
 
 #define N 100
 
-const double R = 1.0;
+const double R = 2.0;
 double fa = 0.0;
-double P = 1.0;
+double P = 2.0;
 double sa = 0.0;
 double M, S;
 double data[N];
@@ -26,7 +26,7 @@ int main(int argc, char**argv){
 
   std::default_random_engine g;
   g.seed(S);
-  std::normal_distribution<double> d(M, 1.0);
+  std::normal_distribution<double> d(M, 2.0);
 
   for (int i = 0; i < N; i++){
     data[i] = d(g);

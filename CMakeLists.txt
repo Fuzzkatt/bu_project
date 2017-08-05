@@ -37,6 +37,10 @@ add_executable(filtered_average src/filtered_average.cpp)
 add_dependencies(filtered_average ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(filtered_average ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(robot_pose src/robot_pose.cpp)
+add_dependencies(robot_pose ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(robot_pose ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 add_executable(filter_test src/filter_test.cpp)
 add_dependencies(filter_test ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(filter_test ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
