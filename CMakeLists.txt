@@ -33,6 +33,10 @@ add_executable(noise_variance_sampling src/noise_variance_sampling.cpp)
 add_dependencies(noise_variance_sampling ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(noise_variance_sampling ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(gyro_noise_test src/gyro_noise_test.cpp)
+add_dependencies(gyro_noise_test ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(gyro_noise_test ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 add_executable(filtered_average src/filtered_average.cpp)
 add_dependencies(filtered_average ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(filtered_average ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

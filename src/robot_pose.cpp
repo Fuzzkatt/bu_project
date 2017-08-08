@@ -9,7 +9,7 @@
 
 #define PI 3.14159265
 
-const double R = 1.0e-07; //temp for now; need to measure through sampling later
+const double R = 1.0e-07; 
 const double Q = 1.0e-07; //temp for now; need to measure through sampling later
 double P;
 double X, Xh;
