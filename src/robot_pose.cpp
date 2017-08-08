@@ -30,6 +30,7 @@ void callback(const bu_project::tagdata3d td){
       firstIteration = 0;
     }
     else{
+      P+=Q; //according to rob, shouldn't be here but can't seem to respond to sharp movements otherwise?
       X+=P/(P+R)*(Y-X);
       P*=(1-P/(P+R)); 
     }
@@ -47,12 +48,14 @@ void callback(const bu_project::tagdata3d td){
     //std::cout << "measured translation of robot with respect to tag 0\n" << trans << "\n";
     //std::cout << "measured rotation vector of robot with respect to tag 0\n" << rot << "\n";
 
-    std::cout << "measured distance of robot with respect to tag 0: " << distance << " m @ " << X/PI*180.0 << " degrees\n";
+    std::cout << "y: " << Y/PI*180.0 << "\n";
+    std::cout << "filtered distance of robot with respect to tag 0: " << distance << " m @ " << X/PI*180.0 << " degrees\n";
   }
 }
 
 void callback2(const std_msgs::Float64 f){
   if (!firstIteration){
+    std::cout << "received gyro data\n";
     X+=f.data*PI/180.0;
     P+=Q; 
   //outputs change in theta from original position
