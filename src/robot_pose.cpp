@@ -12,7 +12,7 @@
 const double R = 1.0e-07; 
 const double Q = 1.0e-07; //temp for now; need to measure through sampling later
 double P;
-double X, Xh;
+double X;
 bool firstIteration = 1;
 
 ros::Publisher pub;
@@ -27,21 +27,18 @@ void callback(const bu_project::tagdata3d td){
     if (firstIteration){
       P = Q;
       X = Y;
-      Xh = Y;
       firstIteration = 0;
     }
     else{
-      P+=Q;
-      Xh=X+P/(P+R)*(Y-X);
+      X+=P/(P+R)*(Y-X);
       P*=(1-P/(P+R)); 
-      X=Xh;
     }
 
     Eigen::Matrix2d rot;
-    rot(0, 0) = cos(Y);
-    rot(1, 0) = -sin(Y);
-    rot(0, 1) = sin(Y);
-    rot(1, 1) = cos(Y);
+    rot(0, 0) = cos(X);
+    rot(1, 0) = -sin(X);
+    rot(0, 1) = sin(X);
+    rot(1, 1) = cos(X);
 
     Eigen::Vector2d trans(x0, y0);
     trans = rot*trans;
@@ -50,13 +47,14 @@ void callback(const bu_project::tagdata3d td){
     //std::cout << "measured translation of robot with respect to tag 0\n" << trans << "\n";
     //std::cout << "measured rotation vector of robot with respect to tag 0\n" << rot << "\n";
 
-    std::cout << "measured distance of robot with respect to tag 0: " << distance << " m @ " << Xh/PI*180.0 << " degrees\n";
+    std::cout << "measured distance of robot with respect to tag 0: " << distance << " m @ " << X/PI*180.0 << " degrees\n";
   }
 }
 
 void callback2(const std_msgs::Float64 f){
   if (!firstIteration){
-    X+= f.data*PI/180.0; 
+    X+=f.data*PI/180.0;
+    P+=Q; 
   //outputs change in theta from original position
   //always start directly facing tag
   //might need to multiply by -1 since robot to tag theta is 180 rotation from way robot is facing?  
