@@ -8,5 +8,7 @@
   </node>
   <node pkg="bu_project" type="filtered_average" name="fAverage" output="screen"> 
   </node>
+  <node pkg="bu_project" type="robot_pose" name="rPose" output="screen">
+  </node>
 
 </launch>
