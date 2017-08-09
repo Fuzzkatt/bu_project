@@ -53,6 +53,10 @@ add_executable(my_subscriber src/my_subscriber.cpp)
 add_dependencies(my_subscriber ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(my_subscriber ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(frankenstein src/frankenstein.cpp)
+add_dependencies(frankenstein ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(frankenstein ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 install(TARGETS my_publisher my_subscriber
         ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
         LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
