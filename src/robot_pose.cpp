@@ -10,7 +10,7 @@
 #define PI 3.14159265
 
 const double R = 1.0e-06; //vision 
-const double Q = 1.0e-06; //gyro temp for now; need to measure through sampling later
+const double Q = 2.5e-06; //gyro
 double P;
 double X;
 bool firstIteration = 1;

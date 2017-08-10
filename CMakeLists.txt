@@ -37,6 +37,10 @@ add_executable(gyro_noise_test src/gyro_noise_test.cpp)
 add_dependencies(gyro_noise_test ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(gyro_noise_test ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
+add_executable(rotation_noise_test src/rotation_noise_test.cpp)
+add_dependencies(rotation_noise_test ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(rotation_noise_test ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
 add_executable(filtered_average src/filtered_average.cpp)
 add_dependencies(filtered_average ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
 target_link_libraries(filtered_average ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

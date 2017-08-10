@@ -8,6 +8,7 @@
   </node>
   <node pkg="bu_project" type="robot_pose" name="rPose" output="screen">
   </node>
-  
+  <node pkg="bu_project" type="rotation_noise_test" name="rnt" output="screen">
+  </node>  
 
 </launch>
