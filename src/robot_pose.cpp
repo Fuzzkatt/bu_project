@@ -9,8 +9,8 @@
 
 #define PI 3.14159265
 
-const double R = 1.0e-06; 
-const double Q = 1.0e-06; //temp for now; need to measure through sampling later
+const double R = 1.0e-06; //vision 
+const double Q = 1.0e-06; //gyro temp for now; need to measure through sampling later
 double P;
 double X;
 bool firstIteration = 1;
@@ -25,21 +25,18 @@ void callback(const bu_project::tagdata3d td){
 
   if (x0!=0.0||y0!=0.0||z0!=0.0||Y!=0.0){ 
     if (firstIteration){
-      P = Q;
+      P = R;
       X = Y;
       firstIteration = 0;
     }
     else{
-      P+=Q; //according to rob, shouldn't be here but can't seem to respond to sharp movements otherwise?
       X+=P/(P+R)*(Y-X);
       P*=(1-P/(P+R));
-      std::cout << "P: " << P << "\n"; 
     }
-
-    std_msgs::Float64 f;
-    f.data = P;
-    pub.publish(f);
-
+    
+    std_msgs::Float64 temp;
+    temp.data = X*180.0/PI;
+    pub.publish(temp);
     Eigen::Matrix2d rot;
     rot(0, 0) = cos(X);
     rot(1, 0) = -sin(X);
@@ -60,9 +57,12 @@ void callback(const bu_project::tagdata3d td){
 
 void callback2(const std_msgs::Float64 f){
   if (!firstIteration){
-    std::cout << "received gyro data\n";
     X+=f.data*PI/180.0;
-    P+=Q; 
+    P+=Q;
+    std::cout << "filtered angle  of robot with respect to tag 0: " << X/PI*180.0 << " degrees\n"; 
+    std_msgs::Float64 temp;
+    temp.data = X*180.0/PI;
+    pub.publish(temp);
   //outputs change in theta from original position
   //always start directly facing tag
   //might need to multiply by -1 since robot to tag theta is 180 rotation from way robot is facing?  
@@ -72,7 +72,7 @@ void callback2(const std_msgs::Float64 f){
 int main (int argc, char** argv){
   ros::init(argc, argv, "robot_pose");
   ros::NodeHandle nh;
-  pub = nh.advertise<std_msgs::Float64>("P_value", 1000);
+  pub = nh.advertise<std_msgs::Float64>("filtered_angle", 1000);
   ros::Subscriber sub = nh.subscribe("tagdata_raw", 1000, callback);
   ros::Subscriber sub2 = nh.subscribe("yaw_values", 1000, callback2);
   ros::spin();
